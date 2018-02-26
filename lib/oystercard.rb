@@ -2,6 +2,7 @@
 class Oystercard
   attr_reader :balance, :use
   DEFAULT_LIMIT = 90
+  FARE = 1
 
   def initialize
     @balance = 0
@@ -13,16 +14,18 @@ class Oystercard
   end
 
   def deduct(charge)
-    raise 'You do not have enough funds to make this transaction' if min?(charge)
+    raise 'You do not have enough funds to make this transaction' if min_out?(charge)
     @balance -= charge
   end
 
   def touch_in
+    raise 'You do not have have enough funds' if min_in?
     @use = :in
   end
 
   def touch_out
-    @use == :in ? (@use = :out) : (raise 'You are not touched in')
+    raise 'You are not touched in' if @use != :in
+    @use = :out
   end
 
   def in_journey?
@@ -35,7 +38,11 @@ class Oystercard
     (@balance + amount) > DEFAULT_LIMIT
   end
 
-  def min?(charge)
-    (@balance - charge) < 0
+  def min_out?(charge)
+    (@balance - charge) < 0 
+  end
+
+  def min_in?
+    @balance < FARE 
   end
 end

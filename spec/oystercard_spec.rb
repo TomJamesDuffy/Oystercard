@@ -32,8 +32,12 @@ describe Oystercard do
 
   describe '#touch_in' do
     it "should set use to in" do
+      subject.top_up(10)
       subject.touch_in
       expect(subject.use).to eq :in
+    end
+    it "should raise an error if your find are less than #{Oystercard::FARE} for journey" do
+      expect { subject.touch_in } .to raise_error(RuntimeError)
     end
   end
 
@@ -42,21 +46,27 @@ describe Oystercard do
       expect { subject.touch_out } .to raise_error(RuntimeError)
     end
     it "should set use to out" do
+      subject.top_up(10)
       subject.touch_in
       subject.touch_out
       expect(subject.use).to eq :out
     end
   end
 
+
   describe '#in_journey?' do
+    before(:each) do
+      subject.top_up(10)
+      subject.touch_in  
+    end
+
     it "in journey should respond with true" do
-      subject.touch_in
-      expect(subject.in_journey?).to return true
+      expect(subject.in_journey?).to eq true
     end
     it "in journey should respond with false" do
-      subject.touch_in
       subject.touch_out
-      expect(subject.in_journey?).to return false
+      expect(subject.in_journey?).to eq false
     end
-  end
+  end 
 end
+
