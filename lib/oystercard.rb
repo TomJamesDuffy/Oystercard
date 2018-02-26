@@ -12,9 +12,18 @@ class Oystercard
     @balance += amount
   end
 
+  def deduct(charge)
+    raise 'You do not have enough funds to make this transaction' if min?(charge) 
+    @balance -= charge
+  end
+
   private
 
   def limit?(amount)
     (@balance + amount) > DEFAULT_LIMIT
+  end
+
+  def min?(charge)
+    (@balance - charge) < 0
   end
 end
