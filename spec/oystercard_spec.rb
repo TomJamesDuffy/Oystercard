@@ -51,12 +51,12 @@ describe Oystercard do
   describe '#in_journey?' do
     it "in journey should respond with true" do
       subject.touch_in
-      expect(subject.in_journey?).to eq true
+      expect(subject.in_journey?).to return true
     end
     it "in journey should respond with false" do
       subject.touch_in
       subject.touch_out
-      expect(subject.in_journey?).to eq false
+      expect(subject.in_journey?).to return false
     end
   end
 end
