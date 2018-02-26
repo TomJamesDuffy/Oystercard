@@ -29,4 +29,34 @@ describe Oystercard do
       expect { subject.deduct(10) } .to raise_error(RuntimeError)
     end
   end
+
+  describe '#touch_in' do
+    it "should set use to in" do
+      subject.touch_in
+      expect(subject.use).to eq :in
+    end
+  end
+
+  describe '#touch_out' do
+    it "should raise error if not touched in" do
+      expect { subject.touch_out } .to raise_error(RuntimeError)
+    end
+    it "should set use to out" do
+      subject.touch_in
+      subject.touch_out
+      expect(subject.use).to eq :out
+    end
+  end
+
+  describe '#in_journey?' do
+    it "in journey should respond with true" do
+      subject.touch_in
+      expect(subject.in_journey?).to eq true
+    end
+    it "in journey should respond with false" do
+      subject.touch_in
+      subject.touch_out
+      expect(subject.in_journey?).to eq false
+    end
+  end
 end
