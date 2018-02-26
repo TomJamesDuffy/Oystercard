@@ -8,10 +8,11 @@ class Oystercard
   def initialize
     @balance = 0
     @history = []
+    @journey = Hash.new
   end
 
   def top_up(amount)
-    raise 'You have exceeded your balance!' if limit?(amount)
+    raise 'You have exceeded your limit!' if limit?(amount)
     @balance += amount
   end
 
@@ -22,19 +23,18 @@ class Oystercard
 
   def touch_in(station)
     raise 'You do not have have enough funds' if min_in?
-    @entry_station, @use = station, :out
-    @history.push("Touched in at #{station}")
+    @entry_station, @use = station, :in
   end
 
-  def touch_out
+  def touch_out(station)
     raise 'You are not touched in' if @use != :in
     deduct(FARE)
-    @entry_station, @use = nil, :out
-    @history.push("Touched out at #{station}")
+    @exit_station, @use = station, :out
+    record_history
   end
 
   def in_journey?
-    !@entry_station.nil?
+    @use == :in
   end
 
   private
@@ -49,5 +49,9 @@ class Oystercard
 
   def min_in?
     @balance < FARE
+  end
+
+  def record_history
+    @history.push(@journey[@entry_station] = @exit_station)    
   end
 end

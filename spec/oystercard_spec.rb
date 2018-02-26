@@ -8,6 +8,9 @@ describe Oystercard do
     it 'should initialize with a balance of zero' do # what it should do
       expect(subject.balance).to eq 0 # expectation
     end
+    it 'history should initialize empty' do
+      expect(subject.history.length).to eq(0)
+    end
   end
 
   describe '#top_up' do
@@ -40,27 +43,28 @@ describe Oystercard do
     it "should raise an error if your find are less than #{Oystercard::FARE} for journey" do
       expect { subject.touch_in(dummy_station) } .to raise_error(RuntimeError)
     end
-    it "should record the history of where it has been touched in" do
-      subject.top_up(10)
-      subject.touch_in(dummy_station)
-      expect(subject.history[0]).to eq "Touched in at #{dummy_station}"
-    end
   end
 
   describe '#touch_out' do
     it "should raise error if not touched in" do
-      expect { subject.touch_out } .to raise_error(RuntimeError)
+      expect { subject.touch_out(dummy_station)} .to raise_error(RuntimeError)
     end
     it "should set use to out" do
       subject.top_up(10)
       subject.touch_in(dummy_station)
-      subject.touch_out
+      subject.touch_out(dummy_station)
       expect(subject.use).to eq :out
     end
     it "should deduct balance by #{Oystercard::FARE}" do
       subject.top_up(10)
       subject.touch_in(dummy_station)
-      expect { subject.touch_out } .to change { subject.balance } .by(-Oystercard::FARE)
+      expect { subject.touch_out(dummy_station) } .to change { subject.balance } .by(-Oystercard::FARE)
+    end
+    it 'history should have 1 item' do
+      subject.top_up(10)
+      subject.touch_in(dummy_station)
+      subject.touch_out(dummy_station)
+      expect(subject.history.length).to eq(1)
     end
   end
 
@@ -74,7 +78,7 @@ describe Oystercard do
       expect(subject.in_journey?).to eq true
     end
     it "in journey should respond with false" do
-      subject.touch_out
+      subject.touch_out(dummy_station)
       expect(subject.in_journey?).to eq false
     end
   end
