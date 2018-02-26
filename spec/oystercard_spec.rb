@@ -43,7 +43,7 @@ describe Oystercard do
     it "should record the history of where it has been touched in" do
       subject.top_up(10)
       subject.touch_in(dummy_station)
-      expect(subject.history[0]).to eq "Touched at #{dummy_station}"
+      expect(subject.history[0]).to eq "Touched in at #{dummy_station}"
     end
   end
 
