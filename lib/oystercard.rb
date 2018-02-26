@@ -1,11 +1,12 @@
 # This is the Oystercard class
 class Oystercard
-  attr_reader :balance, :use
+  attr_reader :balance, :use, :history
   DEFAULT_LIMIT = 90
   FARE = 1
 
   def initialize
     @balance = 0
+    @history = []
   end
 
   def top_up(amount)
@@ -18,19 +19,21 @@ class Oystercard
     @balance -= charge
   end
 
-  def touch_in
+  def touch_in(station)
     raise 'You do not have have enough funds' if min_in?
     @use = :in
+    @history.push("Touched at #{station}")
   end
 
   def touch_out
     raise 'You are not touched in' if @use != :in
     @use = :out
     deduct(FARE)
+    @history.pop
   end
 
   def in_journey?
-    @use == :in
+    !@history.empty?
   end
 
   private

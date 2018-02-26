@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   subject(:oystercard) { Oystercard.new }
+  let(:dummy_station) { double :dummy_station }
 
   describe '#initialization' do # where the code being tested comes from
     it 'should initialize with a balance of zero' do # what it should do
@@ -33,11 +34,16 @@ describe Oystercard do
   describe '#touch_in' do
     it "should set use to in" do
       subject.top_up(10)
-      subject.touch_in
+      subject.touch_in(dummy_station)
       expect(subject.use).to eq :in
     end
     it "should raise an error if your find are less than #{Oystercard::FARE} for journey" do
-      expect { subject.touch_in } .to raise_error(RuntimeError)
+      expect { subject.touch_in(dummy_station) } .to raise_error(RuntimeError)
+    end
+    it "should record the history of where it has been touched in" do
+      subject.top_up(10)
+      subject.touch_in(dummy_station)
+      expect(subject.history[0]).to eq "Touched at #{dummy_station}"
     end
   end
 
@@ -47,13 +53,13 @@ describe Oystercard do
     end
     it "should set use to out" do
       subject.top_up(10)
-      subject.touch_in
+      subject.touch_in(dummy_station)
       subject.touch_out
       expect(subject.use).to eq :out
     end
     it "should deduct balance by #{Oystercard::FARE}" do
       subject.top_up(10)
-      subject.touch_in
+      subject.touch_in(dummy_station)
       expect { subject.touch_out } .to change { subject.balance } .by(-Oystercard::FARE)
     end
   end
@@ -61,7 +67,7 @@ describe Oystercard do
   describe '#in_journey?' do
     before(:each) do
       subject.top_up(10)
-      subject.touch_in
+      subject.touch_in(dummy_station)
     end
 
     it "in journey should respond with true" do
