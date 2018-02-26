@@ -26,6 +26,7 @@ class Oystercard
   def touch_out
     raise 'You are not touched in' if @use != :in
     @use = :out
+    deduct(FARE)
   end
 
   def in_journey?
@@ -39,10 +40,10 @@ class Oystercard
   end
 
   def min_out?(charge)
-    (@balance - charge) < 0 
+    (@balance - charge) < 0
   end
 
   def min_in?
-    @balance < FARE 
+    @balance < FARE
   end
 end

@@ -51,13 +51,17 @@ describe Oystercard do
       subject.touch_out
       expect(subject.use).to eq :out
     end
+    it "should deduct balance by #{Oystercard::FARE}" do
+      subject.top_up(10)
+      subject.touch_in
+      expect { subject.touch_out } .to change { subject.balance } .by(-Oystercard::FARE)
+    end
   end
-
 
   describe '#in_journey?' do
     before(:each) do
       subject.top_up(10)
-      subject.touch_in  
+      subject.touch_in
     end
 
     it "in journey should respond with true" do
@@ -67,6 +71,5 @@ describe Oystercard do
       subject.touch_out
       expect(subject.in_journey?).to eq false
     end
-  end 
+  end
 end
-
