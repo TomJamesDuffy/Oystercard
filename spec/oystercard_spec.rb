@@ -8,6 +8,7 @@ describe Oystercard do
       expect(subject.balance).to eq 0 # expectation
     end
   end
+
   describe '#top_up' do
     it 'should top up the card with the value passed as an argument' do
       subject.top_up(10)
