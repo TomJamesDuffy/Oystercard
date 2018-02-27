@@ -28,8 +28,8 @@ class Oystercard
 
   def touch_out(station)
     raise 'You are not touched in' if @use != :in
-    deduct(FARE)
     @exit_station, @use = station, :out
+    deduct(FARE)
     record_history
   end
 
