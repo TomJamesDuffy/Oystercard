@@ -5,32 +5,15 @@ describe JourneyLog do
   let(:dummy_journey) {double :dummy_journey, empty?: false}
   let(:dummy_station) {double :dummy_station}
 
-  describe "#initialize" do
-    it "should have an array to store individual journeys" do
-      expect(subject.log).to be_instance_of(Array)
-    end
-  end
-
   describe "#start" do
-    it "start journey should create a journey object" do
-      subject.start(dummy_station, dummy_journey)
-      expect(subject.journey).to eq (dummy_journey)
-    end
-    it "should create a starting station" do
-      subject.start(dummy_station, dummy_journey)
-      expect(subject.start_station).to eq(dummy_station)
+    it "start journey should assign a journey and station object" do
+      expect(subject.start(dummy_station, dummy_journey)).to eq([dummy_station, dummy_journey])
     end
   end
 
   describe "#end" do
-    it "should create an ending station" do
-      subject.end(dummy_station)
-      expect(subject.end_station).to eq(dummy_station)
-    end
-    it "it should record journey on ending" do
-      subject.start(dummy_station, dummy_journey)
-      subject.end(dummy_station)
-      expect(subject.log).to eq([[dummy_station, dummy_station]])
+    it "should enter into the log" do
+      expect(subject.end(dummy_station)).to eq([["", dummy_station]])
     end
   end
 
@@ -38,7 +21,7 @@ describe JourneyLog do
     it "array should contain journeys" do
       subject.start(dummy_station, dummy_journey)
       subject.end(dummy_station) 
-      expect(subject.journeys).to eq ([dummy_station, dummy_station])
+      expect(subject.journeys).to eq ([dummy_station, ""])
     end
   end
 end

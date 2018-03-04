@@ -1,15 +1,13 @@
-require_relative 'journey.rb'
-# This is the Oystercard class
+require_relative 'journey_log.rb'
+
 class Oystercard
 
   DEFAULT_LIMIT = 90
-  FINE = 6
 
-  attr_reader :balance, :use, :history
+  attr_reader :balance, :use
 
   def initialize
     @balance = 0
-    @history = []
     @use = :out
   end
 
@@ -23,31 +21,23 @@ class Oystercard
   end
 
   def fine_protocol(station)
-    raise 'You have not touched out, a fine is due but your balance is too low! Top Up!' if min_fine?
-    deduct(@journey.fee(@use))
-    record_history(@journey.manual_end)
-    restart_journey
-  end
-
-  def restart_journey
-    @journey = Journey.new 
+    deduct(@journeyLog.fee(@use))
+    @journeyLog.end("")
     @use = :out 
+    new_journey(station)
   end
 
-  def new_journey(station, journey = Journey.new)
-    @journey = journey
-    raise 'You do not have have enough funds to make this journey, top up!' if min_in?
-    journey.add_entry(station)
+  def new_journey(station, journeyLog = JourneyLog.new)
+    @journeyLog = journeyLog
+    @journey_pb = @journeyLog.start(station)
     @use = :in 
   end
 
   def touch_out(station)
-    raise 'You are not touched in' if @journey.entry_station.empty?
-    raise 'You are already touched out' if touched_out? 
-    @journey.add_exit(station)
-    record_history([@journey.state])
+    raise 'You are not touched in' if !journey_ongoing? 
+    @journeyLog.end(station)
     @use = :out
-    deduct(@journey.fee(@use))
+    deduct(@journeyLog.fee(@use))
   end 
 
   def journey_ongoing?
@@ -56,12 +46,8 @@ class Oystercard
 
   private
 
-  def record_history(array)
-    @history.push(array)
-  end
-
   def deduct(charge)
-    raise 'You do not have enough funds to make this transaction' if min_out?(charge)
+    raise 'You do not have enough funds to make this transaction' if (@balance - charge) < 0 
     @balance -= charge
   end
 
@@ -69,19 +55,7 @@ class Oystercard
     (@balance + amount) > DEFAULT_LIMIT
   end
 
-  def min_out?(charge)
-    (@balance - charge) < 0
-  end
-
-  def min_in?
-    @balance < @journey.fee(@use)
-  end
-
-  def min_fine?
-    @balance < @journey.fee(@use)
+  def funds?
+    @balance < @journeyLog.fee(@use)
   end 
-
-  def touched_out?
-    !@journey.entry_station.empty? && !@journey.exit_station.empty?
-  end
 end

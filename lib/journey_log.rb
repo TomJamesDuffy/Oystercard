@@ -3,31 +3,32 @@ require_relative 'journey.rb'
 
 class JourneyLog
 
-  attr_reader :log, :journey, :start_station, :end_station
+  attr_reader :log, :journey
 
   def initialize
     @log = []
-    @start_station = ""
-    @end_station = ""
   end
 
   def start(station, journey = Journey.new)
-    @journey = journey
-    @start_station = station
+    @start_station, @journey = station, journey
+    journey.add_entry(@start_station)
+    @journey
   end
 
   def end(station)
-    @end_station = station
-    @log << [@start_station, @end_station]
+    @journey.add_exit(station)
+    @log.push(@journey)
+  end
+
+  def fee(use)
+    (use == :in) ? 6 : fare_calculation(@journey)
+  end
+
+  def fare_calculation(journey)
+    (journey.entry_station.zone - journey.exit_station.zone).abs
   end
 
   def journeys
-    [@start_station, @end_station]
+    @log.each {|journey| puts "Start: #{journey.entry_station} End: #{journey.exit_station}"} 
   end
-
-  private
-  def current_journey
-    [@start_station, @end_station] if @start_station == "" || @end_station == ""
-    journey = Journey.new
-  end 
 end
