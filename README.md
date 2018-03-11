@@ -31,9 +31,9 @@ There are four objects in the program - the journey log, journey, oystercard and
 
 Using your oystercard you can touch in, touch out and top up. Should you fail to touch out an exception will be raised and you will be fined. Or, if you do not have the funds to make a journey an exception will be raised preventing you from doing so.  
 
-oystercard.top_up(amount)
-oystercard.touch_in(station)
-oystercard.touch_out(station)
+oystercard.top_up(amount)  
+oystercard.touch_in(station)  
+oystercard.touch_out(station)  
 
 **Station**
 
